@@ -2,7 +2,7 @@
 window.ACCOUNTS = [
  {
   "id": "AV-101",
-  "name": "حساب AV-101",
+  "name": "Girl",
   "price": 3,
   "level": 45,
   "likes": 1846,
