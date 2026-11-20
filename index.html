@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avakin Glam Shop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: dark glam theme, slim sticky bar with a search-options button, collapsible filter groups, two-column portrait cards */
+:root{
+  color-scheme:dark;
+  --bg:#130f1c; --surface:#1e1829; --ink:#f6f1fb; --muted:#a79bb8; --line:#33293f;
+  --pink:#ff4f9a; --gold:#ffc857; --pink-ink:#2a0615;
+  --f-display:"Cairo","Tajawal",system-ui,sans-serif; --f-body:"Tajawal","Cairo",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+h1,h2,h3{font-family:var(--f-display);margin:0}
+button,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.wrap{max-width:1100px;margin:0 auto;padding:0 12px}
+
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 8px;border-bottom:1px solid var(--line)}
+.bar .wrap{display:grid;gap:8px}
+.brandrow{display:flex;align-items:center;justify-content:space-between}
+.brand{font-family:var(--f-display);font-weight:900;font-size:19px;letter-spacing:.3px}
+.brand b{color:var(--pink)}
+.wa{display:inline-flex;align-items:center;background:var(--gold);color:#2b1e00;text-decoration:none;font-weight:700;font-size:14px;padding:5px 14px;border-radius:999px}
+.tools{display:flex;gap:8px}
+.opt-btn{flex:1.4;height:40px;border-radius:10px;border:1px solid var(--pink);background:var(--pink);color:var(--pink-ink);font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.opt-btn svg{width:18px;height:18px}
+.opt-btn[aria-expanded="true"]{background:transparent;color:var(--pink)}
+.sort{flex:1;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);padding:0 10px;font-size:14px;min-width:0}
+.active{display:flex}
+.active[hidden]{display:none}
+.active-chip{border:1px solid var(--gold);background:transparent;color:var(--gold);border-radius:999px;padding:3px 12px;font-size:14px;cursor:pointer}
+
+.panel{margin-top:10px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;display:grid;gap:10px}
+.panel[hidden]{display:none}
+.tip{margin:0;background:var(--bg);border-right:3px solid var(--gold);border-radius:8px;padding:8px 12px;font-size:14px;color:var(--ink)}
+details.grp{border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+details.grp summary{list-style:none;cursor:pointer;padding:12px 14px;font-weight:700;display:flex;justify-content:space-between;align-items:center;font-family:var(--f-display)}
+details.grp summary::-webkit-details-marker{display:none}
+details.grp summary::after{content:"+";font-size:22px;color:var(--pink);line-height:1}
+details.grp[open] summary::after{content:"–"}
+.opts{display:flex;flex-wrap:wrap;gap:8px;padding:0 14px 14px}
+.opt{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 14px;cursor:pointer;font-size:14px;text-align:center}
+.opt small{display:block;color:var(--muted);font-size:12px}
+.opt[aria-pressed="true"]{background:var(--pink);border-color:var(--pink);color:var(--pink-ink);font-weight:700}
+.opt[aria-pressed="true"] small{color:var(--pink-ink)}
+.pfoot{display:flex;gap:8px}
+.pfoot .btn{flex:1}
+
+.count{display:flex;justify-content:space-between;color:var(--muted);font-size:14px;margin:12px 0 10px;scroll-margin-top:110px}
+.count b{color:var(--ink)}
+.grid{display:grid;grid-template-columns:1fr;gap:12px;padding-bottom:40px}
+@media (min-width:760px){.grid{grid-template-columns:repeat(2,1fr);gap:14px}}
+@media (min-width:1060px){.grid{grid-template-columns:repeat(3,1fr)}}
+
+.card{all:unset;box-sizing:border-box;cursor:pointer;display:block;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.card:focus-visible{outline:3px solid var(--gold)}
+.pic{position:relative;aspect-ratio:2.2/1;background:#000}
+.pic svg,.pic img{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
+.lv{position:absolute;top:8px;inset-inline-start:8px;background:rgba(10,6,16,.75);font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px}
+.badges{position:absolute;top:8px;inset-inline-end:8px;display:flex;gap:6px}
+.badge{font-family:var(--f-display);font-size:12px;font-weight:900;padding:2px 10px;border-radius:999px}
+.badge.new{background:var(--pink);color:var(--pink-ink)}
+.badge.vip{background:var(--gold);color:#2b1e00}
+.sold-ov{position:absolute;inset:0;background:rgba(8,5,12,.6);display:grid;place-items:center}
+.sold-ov span{font-family:var(--f-display);font-weight:900;font-size:clamp(22px,6vw,30px);color:#ff6b6b;border:3px solid #ff6b6b;padding:2px 18px;border-radius:10px;transform:rotate(-8deg);background:rgba(8,5,12,.45)}
+.card.sold .info{opacity:.6}
+.card.sold .price{text-decoration:line-through}
+.btn.off{pointer-events:none;opacity:.45}
+.demo{margin-top:12px;background:#3a2a0a;border:1px solid var(--gold);color:var(--gold);border-radius:10px;padding:8px 12px;font-size:14px}
+.demo[hidden]{display:none}
+.info{padding:10px 12px 12px;display:grid;gap:6px}
+.row1{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.row1 h3{font-size:16px;font-weight:700}
+.price{font-family:var(--f-display);font-weight:900;font-size:22px;color:var(--gold);font-variant-numeric:tabular-nums}
+.mini{display:flex;flex-wrap:wrap;gap:2px 14px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.mini b{color:var(--ink);font-weight:700}
+
+.empty{text-align:center;padding:40px 16px;border:1px dashed var(--line);border-radius:16px;margin-bottom:40px}
+.empty p{color:var(--muted);margin:6px 0 14px}
+.btn{border:0;border-radius:12px;background:var(--pink);color:var(--pink-ink);font-weight:700;padding:11px 16px;cursor:pointer;text-decoration:none;display:inline-block;text-align:center}
+.btn.alt{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+
+dialog{border:0;padding:0;background:var(--surface);color:var(--ink);width:min(480px,100%);max-width:100%;margin:auto auto 0;border-radius:22px 22px 0 0;max-height:92%}
+@media (min-width:640px){dialog{margin:auto;border-radius:22px}}
+dialog::backdrop{background:rgba(5,3,9,.7)}
+.m-pic{position:relative;aspect-ratio:2.2/1;background:#000}
+.m-pic svg,.m-pic img{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
+.close{position:absolute;top:10px;inset-inline-start:10px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(10,6,16,.7);color:#fff;font-size:20px;cursor:pointer}
+.m-body{padding:16px;display:grid;gap:12px}
+.m-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.m-top h2{font-size:19px}
+.facts{margin:0;display:grid;background:var(--bg);border-radius:14px;padding:2px 14px}
+.facts div{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.facts div:last-child{border-bottom:0}
+.facts dt{color:var(--muted);font-size:14px}
+.facts dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums}
+.yes{color:#4ade80}
+.no{color:#ff7b7b}
+.acts{display:flex;gap:8px}
+.acts .btn{flex:1}
+.note{font-size:13px;color:var(--muted);margin:0}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="wrap">
+    <div class="brandrow">
+      <div class="brand">Avakin <b>Glam</b> Shop</div>
+      <a class="wa" id="topWa" href="#" target="_blank" rel="noopener">واتساب</a>
+    </div>
+    <div class="tools">
+      <button class="opt-btn" id="optBtn" type="button" aria-expanded="false" aria-controls="panel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>
+        خيارات البحث
+      </button>
+      <select class="sort" id="sort" aria-label="الترتيب">
+        <option value="asc">الأرخص أولاً</option>
+        <option value="desc">الأغلى أولاً</option>
+        <option value="level">الأعلى لفل</option>
+        <option value="likes">الأكثر لايكات</option>
+      </select>
+    </div>
+    <div class="active" id="active" hidden><button class="active-chip" id="activeChip" type="button"></button></div>
+  </div>
+</div>
+
+<main class="wrap">
+  <section class="panel" id="panel" hidden aria-label="خيارات البحث">
+    <p class="tip">لبحث أفضل اختر عنصراً واحداً فقط من هذه الخيارات ثم ابحث.</p>
+    <div id="groups"></div>
+    <div class="pfoot">
+      <button class="btn alt" id="clearBtn" type="button">مسح الاختيار</button>
+      <button class="btn" id="showBtn" type="button">عرض النتائج</button>
+    </div>
+  </section>
+
+  <div class="count" id="count"></div>
+  <section class="grid" id="grid" aria-live="polite"></section>
+  <div class="empty" id="empty" hidden>
+    <h3>لا توجد حسابات بهذا الخيار</h3>
+    <p>جرّب خياراً آخر أو تواصل معنا وسنبحث لك عن حساب.</p>
+    <button class="btn" id="emptyReset" type="button">عرض كل الحسابات</button>
+  </div>
+</main>
+
+<dialog id="dlg" aria-labelledby="dTitle">
+  <div class="m-pic" id="dImg"></div>
+  <button class="close" id="dClose" type="button" aria-label="إغلاق">×</button>
+  <div class="m-body">
+    <div class="m-top"><h2 id="dTitle"></h2><span class="price" id="dPrice"></span></div>
+    <dl class="facts" id="dFacts"></dl>
+    <div class="acts">
+      <a class="btn" id="dBuy" href="#" target="_blank" rel="noopener">اشترِ عبر واتساب</a>
+      <a class="btn alt" id="dTg" href="#" target="_blank" rel="noopener">تيليجرام</a>
+    </div>
+    <p class="note">تُفتح محادثة مع البائع ومعها رقم الحساب. الدفع والتسليم داخل المحادثة.</p>
+  </div>
+</dialog>
+
+<script src="config.js"></script>
+<script>
+/* الإعدادات (الرقم والعملة) في ملف config.js */
+const CFG = window.APP_CONFIG || {};
+const SETTINGS = Object.assign({ currency:"$", whatsapp:"21600000000", telegram:"your_username" }, CFG.settings || {});
+
+/* وسم New يظهر لمدة هذا العدد من الأيام بعد إضافة الحساب */
+const NEW_DAYS = 7;
+/* الحسابات تأتي من الملف accounts.js الذي تحدّثه لوحة الأدمن */
+let ACCOUNTS = [];
+
+/* ===== خيارات البحث: min شامل، max غير شامل. null = بلا حد ===== */
+const cur = SETTINGS.currency;
+const GROUPS = [
+  {key:"level", short:"اللفل", title:"البحث حسب اللفل", field:"level", options:[
+    {label:"من لفل 10 إلى 30", min:10, max:30},
+    {label:"من لفل 30 إلى 50", min:30, max:50},
+    {label:"من لفل 50 إلى 70", min:50, max:70},
+    {label:"أكثر من لفل 70",   min:70, max:null}
+  ]},
+  {key:"likes", short:"اللايكات", title:"البحث حسب عدد اللايكات", field:"likes", options:[
+    {label:"أقل من 200 لايك",  min:null, max:200},
+    {label:"بين 200 و 800",    min:200,  max:800},
+    {label:"بين 800 و 1500",   min:800,  max:1500},
+    {label:"بين 1500 و 3000",  min:1500, max:3000},
+    {label:"أكثر من 3000",     min:3000, max:null}
+  ]},
+  {key:"price", short:"الثمن", title:"البحث حسب الثمن", field:"price", options:[
+    {label:"رخيص",        sub:"أقل من 10"+cur,        min:null, max:10},
+    {label:"متوسط",       sub:"10"+cur+" – 30"+cur,   min:10,   max:30},
+    {label:"أغلى بقليل",  sub:"30"+cur+" – 60"+cur,   min:30,   max:60},
+    {label:"غالي كثير",   sub:"أكثر من 60"+cur,       min:60,   max:null}
+  ]}
+];
+
+const $ = id => document.getElementById(id);
+const fmt = n => n >= 1000 ? (n/1000).toString().replace(/\.0$/,"") + "k" : String(n);
+const fmtFull = n => new Intl.NumberFormat("en-US").format(n);
+const wa = m => `https://wa.me/${SETTINGS.whatsapp}?text=${encodeURIComponent(m||"مرحباً، أريد الاستفسار عن حسابات أفاكين")}`;
+$("topWa").href = wa();
+
+/* إذا وضعت a.img (مسار صورة) تظهر صورة الحساب، وإلا يظهر رسم مؤقت */
+function art(a, uid){
+  if(a.img) return `<img src="${a.img}" alt="${a.name}" loading="lazy">`;
+  const h = a.hue, h2 = (h+60)%360;
+  return `<svg viewBox="0 0 440 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <linearGradient id="bg${uid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${h} 70% 48%)"/><stop offset="1" stop-color="hsl(${h2} 65% 22%)"/></linearGradient>
+      <linearGradient id="sk${uid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fff" stop-opacity=".7"/></linearGradient>
+    </defs>
+    <rect width="440" height="200" fill="url(#bg${uid})"/>
+    <g fill="#fff" opacity=".35"><path d="M60 40l3 8 8 3-8 3-3 8-3-8-8-3 8-3z"/><path d="M370 110l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/><path d="M330 36l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="M120 150l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></g>
+    <path d="M192 62c-6 28-4 62 6 84h44c10-22 12-56 6-84-8-24-48-24-56 0z" fill="hsl(${h2} 60% 18%)" opacity=".75"/>
+    <circle cx="220" cy="70" r="24" fill="url(#sk${uid})"/>
+    <path d="M165 210c0-44 24-76 55-76s55 32 55 76z" fill="url(#sk${uid})"/>
+  </svg>`;
+}
+
+const isNew = a => a.added && !a.sold && (Date.now() - Date.parse(a.added)) / 864e5 <= NEW_DAYS;
+function overlays(a){
+  const b = (isNew(a) ? '<span class="badge new">New</span>' : '') + (a.vip ? '<span class="badge vip">VIP</span>' : '');
+  return `<span class="lv">LV ${a.level}</span>${b ? `<div class="badges">${b}</div>` : ''}` +
+         (a.sold ? '<div class="sold-ov"><span>تم البيع</span></div>' : '');
+}
+
+/* خيار واحد فقط في كل البحث */
+const state = {sel:null, sort:"asc"};   // sel = {g, o}
+
+function buildPanel(){
+  $("groups").innerHTML = GROUPS.map((g, gi) => `
+    <details class="grp">
+      <summary>${g.title}</summary>
+      <div class="opts">${g.options.map((o, oi) =>
+        `<button class="opt" type="button" data-g="${gi}" data-o="${oi}" aria-pressed="false">${o.label}${o.sub?`<small>${o.sub}</small>`:""}</button>`
+      ).join("")}</div>
+    </details>`).join("");
+}
+
+function syncUI(){
+  document.querySelectorAll(".opt").forEach(b => {
+    const on = state.sel && state.sel.g === +b.dataset.g && state.sel.o === +b.dataset.o;
+    b.setAttribute("aria-pressed", String(!!on));
+  });
+  if(state.sel){
+    const g = GROUPS[state.sel.g], o = g.options[state.sel.o];
+    $("activeChip").textContent = `${g.short}: ${o.label}  ✕`;
+    $("active").hidden = false;
+  } else { $("active").hidden = true; }
+}
+
+function render(){
+  let list = ACCOUNTS.slice();
+  if(state.sel){
+    const g = GROUPS[state.sel.g], o = g.options[state.sel.o];
+    list = list.filter(a => (o.min === null || a[g.field] >= o.min) && (o.max === null || a[g.field] < o.max));
+  }
+  if(state.sort==="asc") list.sort((a,b)=>a.price-b.price);
+  if(state.sort==="desc") list.sort((a,b)=>b.price-a.price);
+  if(state.sort==="level") list.sort((a,b)=>b.level-a.level);
+  if(state.sort==="likes") list.sort((a,b)=>b.likes-a.likes);
+  list = [...list.filter(a => !a.sold), ...list.filter(a => a.sold)];
+  const avail = list.filter(a => !a.sold).length, soldN = list.length - avail;
+  $("count").innerHTML = `<span><b>${avail}</b> حساب متوفر${soldN ? ` · ${soldN} مباع` : ""}</span>`;
+  $("empty").hidden = list.length !== 0;
+  $("grid").innerHTML = list.map(a => `
+    <button class="card${a.sold ? " sold" : ""}" type="button" data-id="${a.id}" aria-label="${a.name}، ${a.sold ? "تم البيع" : a.price + cur}">
+      <div class="pic">${art(a, a.id)}${overlays(a)}</div>
+      <div class="info">
+        <div class="row1"><h3>${a.name}</h3><span class="price">${a.price}${cur}</span></div>
+        <div class="mini"><span>لايكات <b>${fmtFull(a.likes)}</b></span><span>منازل <b>${a.houses}</b></span><span>ملابس <b>${fmtFull(a.clothes)}</b></span><span>حيوانات <b>${a.pets ?? 0}</b></span></div>
+      </div>
+    </button>`).join("");
+  syncUI();
+}
+
+function openDetails(id){
+  const a = ACCOUNTS.find(x => x.id === id);
+  $("dImg").innerHTML = art(a, "m"+a.id) + overlays(a);
+  $("dTitle").textContent = a.name;
+  $("dPrice").textContent = a.price + cur;
+  const row = (k, v) => `<div><dt>${k}</dt><dd>${v}</dd></div>`;
+  $("dFacts").innerHTML =
+    row("رقم الحساب", a.id) +
+    row("اللفل", a.level) +
+    row("اللايكات", fmtFull(a.likes)) +
+    row("المنازل", a.houses) +
+    row("الملابس", fmtFull(a.clothes)) +
+    row("الحيوانات", a.pets ?? 0) +
+    row("السنوات", a.years + " سنوات") +
+    row("تأكيد العمر +18", a.adult ? '<span class="yes">نعم ✓</span>' : '<span class="no">لا</span>');
+  const buy = $("dBuy");
+  buy.classList.toggle("off", !!a.sold);
+  buy.textContent = a.sold ? "تم البيع" : "اشترِ عبر واتساب";
+  buy.href = wa(`مرحباً، أريد شراء الحساب ${a.id} (${a.name}) بسعر ${a.price}${cur}`);
+  $("dTg").href = `https://t.me/${SETTINGS.telegram}`;
+  $("dlg").showModal();
+}
+
+function setPanel(open){
+  $("panel").hidden = !open;
+  $("optBtn").setAttribute("aria-expanded", String(open));
+}
+function clearSel(){ state.sel = null; render(); }
+
+buildPanel();
+$("optBtn").addEventListener("click", () => setPanel($("panel").hidden));
+$("groups").addEventListener("click", e => {
+  const b = e.target.closest(".opt"); if(!b) return;
+  const g = +b.dataset.g, o = +b.dataset.o;
+  state.sel = (state.sel && state.sel.g === g && state.sel.o === o) ? null : {g, o};
+  render();
+});
+$("clearBtn").addEventListener("click", clearSel);
+$("activeChip").addEventListener("click", clearSel);
+$("emptyReset").addEventListener("click", clearSel);
+$("showBtn").addEventListener("click", () => {
+  setPanel(false);
+  $("count").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"});
+});
+$("sort").addEventListener("change", () => { state.sort = $("sort").value; render(); });
+$("grid").addEventListener("click", e => { const b = e.target.closest("[data-id]"); if(b) openDetails(b.dataset.id); });
+$("dClose").addEventListener("click", () => $("dlg").close());
+$("dlg").addEventListener("click", e => { if(e.target === $("dlg")) $("dlg").close(); });
+function loadScript(src){
+  return new Promise(res => {
+    const el = document.createElement("script");
+    el.src = src; el.onload = () => res(true); el.onerror = () => res(false);
+    document.head.appendChild(el);
+  });
+}
+async function load(){
+  $("count").textContent = "جارٍ تحميل الحسابات...";
+  window.ACCOUNTS = undefined;
+  const ok = await loadScript("accounts.js?t=" + Date.now());   /* t= يمنع عرض نسخة قديمة */
+  if(!ok || !Array.isArray(window.ACCOUNTS)){ $("count").textContent = "تعذّر تحميل الحسابات. أعد المحاولة بعد قليل."; return; }
+  ACCOUNTS = window.ACCOUNTS;
+  if(!ACCOUNTS.length){
+    $("count").textContent = "";
+    $("empty").innerHTML = "<h3>لا توجد حسابات حالياً</h3><p>ستُضاف حسابات جديدة قريباً.</p>";
+    $("empty").hidden = false; return;
+  }
+  render();
+}
+load();
+</script>
+</body>
+</html>

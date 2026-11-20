@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>لوحة الأدمن</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#130f1c; --surface:#1e1829; --ink:#f6f1fb; --muted:#a79bb8; --line:#33293f;
+  --pink:#ff4f9a; --gold:#ffc857; --pink-ink:#2a0615; --bad:#ff7b7b;
+  --f:"Tajawal","Cairo",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.5}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+[hidden]{display:none!important}
+.wrap{max-width:760px;margin:0 auto;padding:0 12px}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 0}
+.h1{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.h1 h1{margin:0;font-size:19px}
+.h1 span{color:var(--muted);font-size:14px}
+.btn{border:0;border-radius:10px;background:var(--pink);color:var(--pink-ink);font-weight:700;padding:9px 14px;cursor:pointer}
+.btn:disabled{opacity:.5;cursor:default}
+.btn.alt{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.btn.warn{background:transparent;color:var(--bad);border:1px solid var(--bad)}
+.btn.sm{padding:6px 12px;font-size:14px}
+section.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;margin:14px 0}
+h2{margin:0 0 10px;font-size:17px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.f{display:flex;flex-direction:column;gap:3px}
+.f.full{grid-column:1/-1}
+.f label{font-size:13px;color:var(--muted)}
+.f input,.f select{height:42px;border-radius:10px;border:1px solid var(--line);background:var(--bg);padding:0 10px;width:100%}
+.f input[type=file]{height:auto;padding:8px}
+.chk{display:flex;align-items:center;gap:8px;height:42px}
+.chk input{width:20px;height:20px}
+.prev{aspect-ratio:2.2/1;background:#000;border-radius:12px;overflow:hidden;display:grid;place-items:center;color:var(--muted);font-size:14px}
+.prev img{width:100%;height:100%;object-fit:cover;display:block}
+.actions{display:flex;gap:8px;margin-top:12px}
+.actions .btn{flex:1}
+.item{display:grid;grid-template-columns:110px 1fr;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.th{aspect-ratio:2.2/1;border-radius:8px;overflow:hidden;background:#000;align-self:start}
+.th img{width:100%;height:100%;object-fit:cover;display:block}
+.meta h3{margin:0;font-size:16px}
+.meta p{margin:2px 0 6px;color:var(--muted);font-size:13px}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 8px;border-radius:999px;margin-inline-start:6px}
+.tag.sold{background:var(--bad);color:#2a0808}
+.tag.new{background:var(--pink);color:var(--pink-ink)}
+.rowbtn{display:flex;gap:6px;flex-wrap:wrap}
+.empty{color:var(--muted);text-align:center;padding:20px 0}
+.setup{max-width:520px;margin:24px auto}
+.setup .f{margin-bottom:10px}
+.setup ol{margin:0 0 14px;padding-inline-start:20px;color:var(--muted);font-size:14px}
+.err{color:var(--bad);font-size:14px;margin:8px 0 0;min-height:1.4em}
+dialog{border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);padding:18px;width:min(380px,calc(100% - 32px))}
+dialog::backdrop{background:rgba(5,3,9,.7)}
+dialog p{margin:0 0 14px}
+dialog .actions{margin-top:0}
+.toast{position:fixed;inset-inline:12px;bottom:16px;max-width:440px;margin-inline:auto;background:var(--ink);color:#1a1226;border-radius:12px;padding:10px 14px;font-weight:700;text-align:center;z-index:20}
+.help{color:var(--muted);font-size:13px;margin:0 0 10px}
+@media (max-width:420px){.item{grid-template-columns:1fr}.th{max-width:220px}}
+</style>
+</head>
+<body>
+
+<main class="wrap setup" id="setupBox" hidden>
+  <section class="card">
+    <h2>ربط الأدمن بمستودع GitHub</h2>
+    <ol>
+      <li>في GitHub: Settings ثم Developer settings ثم Personal access tokens ثم Fine-grained tokens ثم Generate new token.</li>
+      <li>في Repository access اختر Only select repositories واختر مستودع المتجر.</li>
+      <li>في Permissions ثم Repository permissions اجعل Contents على Read and write.</li>
+      <li>اضغط Generate token وانسخ المفتاح والصقه هنا. يُحفظ على هذا الجهاز فقط.</li>
+    </ol>
+    <form id="setupForm" autocomplete="off">
+      <div class="f"><label for="owner">اسم المستخدم في GitHub</label><input id="owner" type="text" required autocapitalize="off"></div>
+      <div class="f"><label for="repo">اسم المستودع</label><input id="repo" type="text" required autocapitalize="off"></div>
+      <div class="f"><label for="token">المفتاح (token)</label><input id="token" type="password" required autocapitalize="off"></div>
+      <button class="btn" id="setupBtn" type="submit" style="width:100%">حفظ والدخول</button>
+      <p class="err" id="setupErr" role="alert"></p>
+    </form>
+  </section>
+</main>
+
+<div id="app" hidden>
+<header>
+  <div class="wrap h1">
+    <h1>لوحة الأدمن</h1>
+    <span id="total"></span>
+    <button class="btn alt sm" id="outBtn" type="button">فصل الجهاز</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card">
+    <h2 id="formTitle">إضافة حساب</h2>
+    <form id="form" autocomplete="off">
+      <div class="grid">
+        <div class="f full">
+          <label for="img">صورة الحساب (لقطة الشاشة)</label>
+          <input id="img" type="file" accept="image/*">
+        </div>
+        <div class="f full"><div class="prev" id="prev">لا توجد صورة</div></div>
+        <div class="f full"><label for="name">اسم الحساب (اختياري)</label><input id="name" type="text" placeholder="مثال: حساب ELYSIA"></div>
+        <div class="f"><label for="price">الثمن</label><input id="price" type="number" inputmode="decimal" min="0" step="any" required></div>
+        <div class="f"><label for="level">اللفل</label><input id="level" type="number" inputmode="numeric" min="0"></div>
+        <div class="f"><label for="likes">اللايكات</label><input id="likes" type="number" inputmode="numeric" min="0"></div>
+        <div class="f"><label for="houses">المنازل</label><input id="houses" type="number" inputmode="numeric" min="0"></div>
+        <div class="f"><label for="clothes">الملابس</label><input id="clothes" type="number" inputmode="numeric" min="0"></div>
+        <div class="f"><label for="pets">الحيوانات</label><input id="pets" type="number" inputmode="numeric" min="0"></div>
+        <div class="f"><label for="years">السنوات</label><input id="years" type="number" inputmode="numeric" min="0"></div>
+        <div class="f"><label for="adult">تأكيد العمر +18</label>
+          <select id="adult"><option value="1">نعم</option><option value="0">لا</option></select></div>
+        <div class="f"><label>&nbsp;</label><label class="chk"><input id="vip" type="checkbox"> وسم VIP</label></div>
+        <div class="f full"><label class="chk"><input id="sold" type="checkbox"> تم البيع</label></div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="saveBtn" type="submit">نشر الحساب</button>
+        <button class="btn alt" id="cancelBtn" type="button" hidden>إلغاء التعديل</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>الحسابات</h2>
+    <p class="help">بعد كل حفظ يظهر التغيير في المتجر خلال دقيقة تقريباً (وقت تحديث GitHub Pages). وسم New يظهر تلقائياً للحساب الجديد.</p>
+    <div id="list"></div>
+  </section>
+</main>
+</div>
+
+<dialog id="dlg">
+  <p id="dMsg"></p>
+  <div class="actions">
+    <button class="btn warn" id="dYes" type="button">نعم</button>
+    <button class="btn alt" id="dNo" type="button">لا</button>
+  </div>
+</dialog>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const LS = "avk_gh_v1";
+const FILE_HEAD = "/* ملف الحسابات. تحدّثه لوحة الأدمن تلقائيا، لا تعدله يدويا */\nwindow.ACCOUNTS = ";
+const NUM = ["level","likes","houses","clothes","pets","years"];
+let cfg = null, accounts = [], editing = null, newImgBlob = null, busy = false;
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const isNew = a => a.added && !a.sold && (Date.now() - Date.parse(a.added)) / 864e5 <= 7;
+function toast(t){ const el = $("toast"); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => el.hidden = true, 3200); }
+function ask(msg){
+  return new Promise(res => {
+    $("dMsg").textContent = msg; $("dlg").showModal();
+    const done = v => { $("dlg").close(); $("dYes").onclick = $("dNo").onclick = null; res(v); };
+    $("dYes").onclick = () => done(true); $("dNo").onclick = () => done(false);
+  });
+}
+function setBusy(v){ busy = v; $("saveBtn").disabled = v; }
+
+/* ---------- GitHub API ---------- */
+async function gh(method, path, body){
+  const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}` + (path ? "/" + path : "");
+  const r = await fetch(url, {
+    method, cache: "no-store",
+    headers: Object.assign({ "Authorization": "Bearer " + cfg.token, "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" },
+                           body ? {"Content-Type": "application/json"} : {}),
+    body: body ? JSON.stringify(body) : undefined
+  });
+  let j = null; try{ j = await r.json(); }catch(e){}
+  if(!r.ok){ const e = new Error((j && j.message) || ("HTTP " + r.status)); e.status = r.status; throw e; }
+  return j;
+}
+const b64ToUtf8 = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\s/g, "")), c => c.charCodeAt(0)));
+function utf8ToB64(str){
+  const bytes = new TextEncoder().encode(str); let bin = "";
+  for(let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+function blobToB64(blob){
+  return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(",")[1]); fr.onerror = rej; fr.readAsDataURL(blob); });
+}
+const ref = () => "?ref=" + encodeURIComponent(cfg.branch);
+async function readAccounts(){
+  try{
+    const j = await gh("GET", "contents/accounts.js" + ref());
+    if(!j.content) throw new Error("ملف accounts.js فارغ أو كبير جداً");
+    const t = b64ToUtf8(j.content);
+    return { list: JSON.parse(t.slice(t.indexOf("["), t.lastIndexOf("]") + 1)), sha: j.sha };
+  }catch(e){ if(e.status === 404) return { list: [], sha: null }; throw e; }
+}
+function writeAccounts(list, sha, msg){
+  return gh("PUT", "contents/accounts.js", Object.assign(
+    { message: msg, content: utf8ToB64(FILE_HEAD + JSON.stringify(list, null, 1) + ";\n"), branch: cfg.branch },
+    sha ? { sha } : {}));
+}
+async function uploadImg(id, blob){
+  const path = `img/${id}-${Date.now()}.jpg`;
+  await gh("PUT", "contents/" + path, { message: "صورة " + id, content: await blobToB64(blob), branch: cfg.branch });
+  return path;
+}
+async function removeFile(path){
+  try{ const j = await gh("GET", "contents/" + path + ref()); await gh("DELETE", "contents/" + path, { message: "حذف صورة", sha: j.sha, branch: cfg.branch }); }catch(e){}
+}
+const imgSrc = p => !p ? "" : /^https?:/.test(p) ? p : `https://raw.githubusercontent.com/${cfg.owner}/${cfg.repo}/${cfg.branch}/${p}`;
+
+function errMsg(e){
+  if(e.status === 401) return "المفتاح غير صالح أو منتهي. اربط الجهاز من جديد.";
+  if(e.status === 403) return "المفتاح لا يملك صلاحية الكتابة. اجعل Contents على Read and write.";
+  if(e.status === 404) return "لم أجد المستودع. تحقق من الاسم والمفتاح.";
+  if(e.status === 409 || e.status === 422) return "تعارض في الحفظ. حدّث الصفحة وأعد المحاولة.";
+  return e.message || "خطأ غير معروف";
+}
+
+/* ---------- الواجهة ---------- */
+function nextId(list){
+  const n = list.map(a => parseInt(String(a.id).replace(/\D/g, ""), 10)).filter(Number.isFinite);
+  return "AV-" + (n.length ? Math.max(...n) + 1 : 101);
+}
+function compress(file){
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const r = Math.min(1, 1100 / img.width), c = document.createElement("canvas");
+      c.width = Math.round(img.width * r); c.height = Math.round(img.height * r);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      c.toBlob(b => b ? res(b) : rej(new Error("blob")), "image/jpeg", 0.82);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error("img")); };
+    img.src = url;
+  });
+}
+function showPrev(src){ $("prev").innerHTML = src ? `<img src="${esc(src)}" alt="">` : "لا توجد صورة"; }
+function resetForm(){
+  editing = null; newImgBlob = null;
+  $("form").reset(); $("img").value = ""; showPrev("");
+  $("formTitle").textContent = "إضافة حساب"; $("saveBtn").textContent = "نشر الحساب"; $("cancelBtn").hidden = true;
+}
+function thumb(a){
+  if(a.img) return `<img src="${esc(imgSrc(a.img))}" alt="">`;
+  const h = a.hue ?? 300;
+  return `<div style="width:100%;height:100%;background:linear-gradient(135deg,hsl(${h} 70% 48%),hsl(${(h+60)%360} 65% 22%))"></div>`;
+}
+function render(){
+  $("total").textContent = accounts.length + " حساب";
+  if(!accounts.length){ $("list").innerHTML = '<div class="empty">لا توجد حسابات. أضف أول حساب من الأعلى.</div>'; return; }
+  $("list").innerHTML = accounts.slice().reverse().map(a => `
+    <div class="item">
+      <div class="th">${thumb(a)}</div>
+      <div class="meta">
+        <h3>${esc(a.name)} ${a.sold?'<span class="tag sold">تم البيع</span>':''}${isNew(a)?'<span class="tag new">New</span>':''}</h3>
+        <p>${esc(a.id)} · ${esc(a.price)}$ · لفل ${a.level} · لايكات ${a.likes} · منازل ${a.houses} · ملابس ${a.clothes} · حيوانات ${a.pets} · ${a.years} سنوات · +18: ${a.adult?"نعم":"لا"}</p>
+        <div class="rowbtn">
+          <button class="btn alt sm" data-act="edit" data-id="${esc(a.id)}" type="button">تعديل</button>
+          <button class="btn alt sm" data-act="sold" data-id="${esc(a.id)}" type="button">${a.sold?"إرجاع للبيع":"تم البيع"}</button>
+          <button class="btn warn sm" data-act="del" data-id="${esc(a.id)}" type="button">حذف</button>
+        </div>
+      </div>
+    </div>`).join("");
+}
+async function refresh(){
+  try{ accounts = (await readAccounts()).list; render(); }
+  catch(e){ toast("تعذّر تحميل الحسابات: " + errMsg(e)); }
+}
+
+/* ---------- الربط والدخول ---------- */
+function guess(){
+  const h = location.hostname;
+  if(!h.endsWith(".github.io")) return {owner:"", repo:""};
+  const seg = location.pathname.split("/")[1] || "";
+  return { owner: h.split(".")[0], repo: (seg && !seg.endsWith(".html")) ? seg : h };
+}
+function showApp(on){ $("app").hidden = !on; $("setupBox").hidden = on; }
+async function start(){
+  try{ cfg = JSON.parse(localStorage.getItem(LS)); }catch(e){ cfg = null; }
+  if(cfg && cfg.token){ showApp(true); await refresh(); return; }
+  const g = guess(); $("owner").value = g.owner; $("repo").value = g.repo;
+  showApp(false);
+}
+$("setupForm").addEventListener("submit", async e => {
+  e.preventDefault(); $("setupErr").textContent = ""; $("setupBtn").disabled = true;
+  cfg = { owner: $("owner").value.trim(), repo: $("repo").value.trim(), token: $("token").value.trim(), branch: "main" };
+  try{
+    const info = await gh("GET", "");
+    cfg.branch = info.default_branch || "main";
+    await readAccounts();
+    try{ localStorage.setItem(LS, JSON.stringify(cfg)); }catch(err){}
+    $("token").value = ""; showApp(true); await refresh();
+  }catch(err){ cfg = null; $("setupErr").textContent = errMsg(err); }
+  $("setupBtn").disabled = false;
+});
+$("outBtn").addEventListener("click", async () => {
+  if(!(await ask("فصل هذا الجهاز؟ سيُحذف المفتاح منه وتحتاج لصقه من جديد."))) return;
+  try{ localStorage.removeItem(LS); }catch(e){}
+  cfg = null; accounts = []; showApp(false);
+});
+
+/* ---------- النموذج ---------- */
+$("img").addEventListener("change", async e => {
+  const f = e.target.files[0]; if(!f) return;
+  try{ newImgBlob = await compress(f); showPrev(URL.createObjectURL(newImgBlob)); }
+  catch(err){ newImgBlob = null; toast("تعذّر قراءة الصورة، جرّب صورة أخرى."); }
+});
+
+$("form").addEventListener("submit", async e => {
+  e.preventDefault(); if(busy) return;
+  if($("price").value === ""){ toast("اكتب الثمن."); return; }
+  const n = k => Math.max(0, Math.round(Number($(k).value) || 0));
+  setBusy(true);
+  try{
+    const cur = await readAccounts();
+    const old = editing ? cur.list.find(a => a.id === editing) : null;
+    if(editing && !old) throw new Error("الحساب لم يعد موجوداً");
+    const id = old ? old.id : nextId(cur.list);
+    let img = old ? old.img : "";
+    if(newImgBlob) img = await uploadImg(id, newImgBlob);
+    const rec = {
+      id, name: $("name").value.trim() || ("حساب " + id),
+      price: Number($("price").value),
+      level:n("level"), likes:n("likes"), houses:n("houses"), clothes:n("clothes"), pets:n("pets"), years:n("years"),
+      adult: $("adult").value === "1", vip: $("vip").checked, sold: $("sold").checked,
+      img, hue: old ? old.hue : Math.floor(Math.random() * 360),
+      added: old ? old.added : new Date().toISOString()
+    };
+    const list = old ? cur.list.map(a => a.id === id ? rec : a) : cur.list.concat(rec);
+    await writeAccounts(list, cur.sha, (old ? "تعديل " : "إضافة ") + id);
+    if(old && newImgBlob && old.img && !/^https?:/.test(old.img)) removeFile(old.img);
+    accounts = list; render(); resetForm();
+    toast(old ? "تم الحفظ. يظهر في المتجر خلال دقيقة." : "تم نشر " + id + ". يظهر في المتجر خلال دقيقة.");
+    if(!old) window.scrollTo({top:0});
+  }catch(err){ toast("فشل الحفظ: " + errMsg(err)); }
+  setBusy(false);
+});
+$("cancelBtn").addEventListener("click", resetForm);
+
+$("list").addEventListener("click", async e => {
+  const b = e.target.closest("[data-act]"); if(!b || busy) return;
+  const a = accounts.find(x => x.id === b.dataset.id); if(!a) return;
+  if(b.dataset.act === "edit"){
+    editing = a.id; newImgBlob = null;
+    $("name").value = a.name; $("price").value = a.price;
+    NUM.forEach(k => $(k).value = a[k]);
+    $("adult").value = a.adult ? "1" : "0"; $("vip").checked = !!a.vip; $("sold").checked = !!a.sold;
+    $("img").value = ""; showPrev(imgSrc(a.img));
+    $("formTitle").textContent = "تعديل " + a.id; $("saveBtn").textContent = "حفظ التعديل"; $("cancelBtn").hidden = false;
+    window.scrollTo({top:0, behavior:"smooth"}); return;
+  }
+  if(b.dataset.act === "del" && !(await ask("حذف الحساب " + a.id + " نهائياً؟"))) return;
+  setBusy(true);
+  try{
+    const cur = await readAccounts();
+    let list, msg;
+    if(b.dataset.act === "sold"){
+      list = cur.list.map(x => x.id === a.id ? Object.assign({}, x, {sold: !a.sold}) : x);
+      msg = (a.sold ? "إرجاع للبيع " : "تم بيع ") + a.id;
+    }else{
+      list = cur.list.filter(x => x.id !== a.id); msg = "حذف " + a.id;
+    }
+    await writeAccounts(list, cur.sha, msg);
+    if(b.dataset.act === "del" && a.img && !/^https?:/.test(a.img)) removeFile(a.img);
+    accounts = list; render();
+    toast(b.dataset.act === "del" ? "تم الحذف" : (a.sold ? "رجع للبيع" : "تم وسمه مباعاً") + ". يظهر في المتجر خلال دقيقة.");
+  }catch(err){ toast("فشل: " + errMsg(err)); }
+  setBusy(false);
+});
+
+start();
+</script>
+</body>
+</html>
