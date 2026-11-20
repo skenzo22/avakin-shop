@@ -115,7 +115,7 @@ dialog::backdrop{background:rgba(5,3,9,.7)}
   <div class="wrap">
     <div class="brandrow">
       <div class="brand">Avakin <b>Glam</b> Shop</div>
-      <a class="wa" id="topWa" href="#" target="_blank" rel="noopener">واتساب</a>
+      <a class="wa" id="topTg" href="#" target="_blank" rel="noopener">تيليجرام</a>
     </div>
     <div class="tools">
       <button class="opt-btn" id="optBtn" type="button" aria-expanded="false" aria-controls="panel">
@@ -159,10 +159,9 @@ dialog::backdrop{background:rgba(5,3,9,.7)}
     <div class="m-top"><h2 id="dTitle"></h2><span class="price" id="dPrice"></span></div>
     <dl class="facts" id="dFacts"></dl>
     <div class="acts">
-      <a class="btn" id="dBuy" href="#" target="_blank" rel="noopener">اشترِ عبر واتساب</a>
-      <a class="btn alt" id="dTg" href="#" target="_blank" rel="noopener">تيليجرام</a>
+      <a class="btn" id="dBuy" href="#" target="_blank" rel="noopener">اشترِ عبر تيليجرام</a>
     </div>
-    <p class="note">تُفتح محادثة مع البائع ومعها رقم الحساب. الدفع والتسليم داخل المحادثة.</p>
+    <p class="note">تُفتح محادثة تيليجرام مع البائع. اذكر رقم الحساب في رسالتك. الدفع والتسليم داخل المحادثة.</p>
   </div>
 </dialog>
 
@@ -177,7 +176,7 @@ document.write('<script src="' + window.DATA_BASE + 'config.js"><\/script>');
 const CFG = window.APP_CONFIG || {};
 const BASE = window.DATA_BASE || "";
 const imgUrl = p => /^(https?:|data:)/.test(p) ? p : BASE + p;
-const SETTINGS = Object.assign({ currency:"$", whatsapp:"21600000000", telegram:"your_username" }, CFG.settings || {});
+const SETTINGS = Object.assign({ currency:"$", telegram:"UFC_GHOST" }, CFG.settings || {});
 
 /* وسم New يظهر لمدة هذا العدد من الأيام بعد إضافة الحساب */
 const NEW_DAYS = 7;
@@ -211,8 +210,8 @@ const GROUPS = [
 const $ = id => document.getElementById(id);
 const fmt = n => n >= 1000 ? (n/1000).toString().replace(/\.0$/,"") + "k" : String(n);
 const fmtFull = n => new Intl.NumberFormat("en-US").format(n);
-const wa = m => `https://wa.me/${SETTINGS.whatsapp}?text=${encodeURIComponent(m||"مرحباً، أريد الاستفسار عن حسابات أفاكين")}`;
-$("topWa").href = wa();
+const tg = m => `https://t.me/${String(SETTINGS.telegram).replace(/^@/, "")}` + (m ? "?text=" + encodeURIComponent(m) : "");
+$("topTg").href = tg();
 
 /* إذا وضعت a.img (مسار صورة) تظهر صورة الحساب، وإلا يظهر رسم مؤقت */
 function art(a, uid){
@@ -305,9 +304,8 @@ function openDetails(id){
     row("تأكيد العمر +18", a.adult ? '<span class="yes">نعم ✓</span>' : '<span class="no">لا</span>');
   const buy = $("dBuy");
   buy.classList.toggle("off", !!a.sold);
-  buy.textContent = a.sold ? "تم البيع" : "اشترِ عبر واتساب";
-  buy.href = wa(`مرحباً، أريد شراء الحساب ${a.id} (${a.name}) بسعر ${a.price}${cur}`);
-  $("dTg").href = `https://t.me/${SETTINGS.telegram}`;
+  buy.textContent = a.sold ? "تم البيع" : "اشترِ عبر تيليجرام";
+  buy.href = tg(`مرحباً، أريد شراء الحساب ${a.id} (${a.name}) بسعر ${a.price}${cur}`);
   $("dlg").showModal();
 }
 
