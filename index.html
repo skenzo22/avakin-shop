@@ -6,14 +6,14 @@
 <title>Avakin Glam Shop</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&family=Tajawal:wght@400;500;700&family=Noto+Sans:wght@400;500;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 /* Layout idea: dark glam theme, slim sticky bar with a search-options button, collapsible filter groups, two-column portrait cards */
 :root{
   color-scheme:dark;
   --bg:#130f1c; --surface:#1e1829; --ink:#f6f1fb; --muted:#a79bb8; --line:#33293f;
   --pink:#ff4f9a; --gold:#ffc857; --pink-ink:#2a0615;
-  --f-display:"Cairo","Tajawal",system-ui,sans-serif; --f-body:"Tajawal","Cairo",system-ui,sans-serif;
+  --f-display:"Cairo","Tajawal","Noto Sans","Noto Sans Devanagari",system-ui,sans-serif; --f-body:"Tajawal","Cairo","Noto Sans","Noto Sans Devanagari",system-ui,sans-serif;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -25,10 +25,12 @@ button,select{font:inherit;color:inherit}
 
 .bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 8px;border-bottom:1px solid var(--line)}
 .bar .wrap{display:grid;gap:8px}
-.brandrow{display:flex;align-items:center;justify-content:space-between}
-.brand{font-family:var(--f-display);font-weight:900;font-size:19px;letter-spacing:.3px}
+.brandrow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 8px}
+.brand-actions{display:flex;align-items:center;gap:6px}
+.langsel{height:32px;border-radius:999px;border:1px solid var(--line);background:var(--surface);padding:0 8px;font-size:13px;max-width:104px}
+.brand{font-family:var(--f-display);font-weight:900;font-size:17px;letter-spacing:.3px}
 .brand b{color:var(--pink)}
-.wa{display:inline-flex;align-items:center;background:var(--gold);color:#2b1e00;text-decoration:none;font-weight:700;font-size:14px;padding:5px 14px;border-radius:999px}
+.wa{display:inline-flex;align-items:center;background:var(--gold);color:#2b1e00;text-decoration:none;font-weight:700;font-size:14px;padding:5px 12px;border-radius:999px}
 .tools{display:flex;gap:8px}
 .opt-btn{flex:1.4;height:40px;border-radius:10px;border:1px solid var(--pink);background:var(--pink);color:var(--pink-ink);font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
 .opt-btn svg{width:18px;height:18px}
@@ -40,7 +42,7 @@ button,select{font:inherit;color:inherit}
 
 .panel{margin-top:10px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;display:grid;gap:10px}
 .panel[hidden]{display:none}
-.tip{margin:0;background:var(--bg);border-right:3px solid var(--gold);border-radius:8px;padding:8px 12px;font-size:14px;color:var(--ink)}
+.tip{margin:0;background:var(--bg);border-inline-start:3px solid var(--gold);border-radius:8px;padding:8px 12px;font-size:14px;color:var(--ink)}
 details.grp{border:1px solid var(--line);border-radius:12px;background:var(--bg)}
 details.grp summary{list-style:none;cursor:pointer;padding:12px 14px;font-weight:700;display:flex;justify-content:space-between;align-items:center;font-family:var(--f-display)}
 details.grp summary::-webkit-details-marker{display:none}
@@ -74,8 +76,6 @@ details.grp[open] summary::after{content:"–"}
 .card.sold .info{opacity:.6}
 .card.sold .price{text-decoration:line-through}
 .btn.off{pointer-events:none;opacity:.45}
-.demo{margin-top:12px;background:#3a2a0a;border:1px solid var(--gold);color:var(--gold);border-radius:10px;padding:8px 12px;font-size:14px}
-.demo[hidden]{display:none}
 .info{padding:10px 12px 12px;display:grid;gap:6px}
 .row1{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .row1 h3{font-size:16px;font-weight:700}
@@ -94,6 +94,7 @@ dialog::backdrop{background:rgba(5,3,9,.7)}
 .m-pic{position:relative;aspect-ratio:2.2/1;background:#000}
 .m-pic svg,.m-pic img{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
 .close{position:absolute;top:10px;inset-inline-start:10px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(10,6,16,.7);color:#fff;font-size:20px;cursor:pointer}
+.m-pic .lv{inset-inline-start:54px}
 .m-body{padding:16px;display:grid;gap:12px}
 .m-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .m-top h2{font-size:19px}
@@ -115,18 +116,21 @@ dialog::backdrop{background:rgba(5,3,9,.7)}
   <div class="wrap">
     <div class="brandrow">
       <div class="brand">Avakin <b>Glam</b> Shop</div>
-      <a class="wa" id="topTg" href="#" target="_blank" rel="noopener">تيليجرام</a>
+      <div class="brand-actions">
+        <select class="langsel" id="lang" data-i18n-aria="langLabel"></select>
+        <a class="wa" id="topTg" href="#" target="_blank" rel="noopener" data-i18n="telegram"></a>
+      </div>
     </div>
     <div class="tools">
       <button class="opt-btn" id="optBtn" type="button" aria-expanded="false" aria-controls="panel">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>
-        خيارات البحث
+        <span data-i18n="options"></span>
       </button>
-      <select class="sort" id="sort" aria-label="الترتيب">
-        <option value="asc">الأرخص أولاً</option>
-        <option value="desc">الأغلى أولاً</option>
-        <option value="level">الأعلى لفل</option>
-        <option value="likes">الأكثر لايكات</option>
+      <select class="sort" id="sort" data-i18n-aria="sortLabel">
+        <option value="asc" data-i18n="sortAsc"></option>
+        <option value="desc" data-i18n="sortDesc"></option>
+        <option value="level" data-i18n="sortLevel"></option>
+        <option value="likes" data-i18n="sortLikes"></option>
       </select>
     </div>
     <div class="active" id="active" hidden><button class="active-chip" id="activeChip" type="button"></button></div>
@@ -134,34 +138,34 @@ dialog::backdrop{background:rgba(5,3,9,.7)}
 </div>
 
 <main class="wrap">
-  <section class="panel" id="panel" hidden aria-label="خيارات البحث">
-    <p class="tip">لبحث أفضل اختر عنصراً واحداً فقط من هذه الخيارات ثم ابحث.</p>
+  <section class="panel" id="panel" hidden data-i18n-aria="options">
+    <p class="tip" data-i18n="tip"></p>
     <div id="groups"></div>
     <div class="pfoot">
-      <button class="btn alt" id="clearBtn" type="button">مسح الاختيار</button>
-      <button class="btn" id="showBtn" type="button">عرض النتائج</button>
+      <button class="btn alt" id="clearBtn" type="button" data-i18n="clear"></button>
+      <button class="btn" id="showBtn" type="button" data-i18n="show"></button>
     </div>
   </section>
 
   <div class="count" id="count"></div>
   <section class="grid" id="grid" aria-live="polite"></section>
   <div class="empty" id="empty" hidden>
-    <h3>لا توجد حسابات بهذا الخيار</h3>
-    <p>جرّب خياراً آخر أو تواصل معنا وسنبحث لك عن حساب.</p>
-    <button class="btn" id="emptyReset" type="button">عرض كل الحسابات</button>
+    <h3 id="emptyT"></h3>
+    <p id="emptyP"></p>
+    <button class="btn" id="emptyReset" type="button" data-i18n="showAll"></button>
   </div>
 </main>
 
 <dialog id="dlg" aria-labelledby="dTitle">
   <div class="m-pic" id="dImg"></div>
-  <button class="close" id="dClose" type="button" aria-label="إغلاق">×</button>
+  <button class="close" id="dClose" type="button" data-i18n-aria="close">×</button>
   <div class="m-body">
     <div class="m-top"><h2 id="dTitle"></h2><span class="price" id="dPrice"></span></div>
     <dl class="facts" id="dFacts"></dl>
     <div class="acts">
-      <a class="btn" id="dBuy" href="#" target="_blank" rel="noopener">اشترِ عبر تيليجرام</a>
+      <a class="btn" id="dBuy" href="#" target="_blank" rel="noopener"></a>
     </div>
-    <p class="note">تُفتح محادثة تيليجرام مع البائع. اذكر رقم الحساب في رسالتك. الدفع والتسليم داخل المحادثة.</p>
+    <p class="note" data-i18n="note"></p>
   </div>
 </dialog>
 
@@ -172,50 +176,147 @@ window.DATA_BASE = "https://skenzo22.github.io/avakin-shop/";
 document.write('<script src="' + window.DATA_BASE + 'config.js"><\/script>');
 </script>
 <script>
-/* الإعدادات (الرقم والعملة) في ملف config.js */
 const CFG = window.APP_CONFIG || {};
 const BASE = window.DATA_BASE || "";
 const imgUrl = p => /^(https?:|data:)/.test(p) ? p : BASE + p;
 const SETTINGS = Object.assign({ currency:"$", telegram:"UFC_GHOST" }, CFG.settings || {});
+const NEW_DAYS = 7;            /* وسم New يظهر لمدة هذا العدد من الأيام */
+let ACCOUNTS = [];             /* تأتي من accounts.js */
+const cur = SETTINGS.currency;
+const $ = id => document.getElementById(id);
 
-/* وسم New يظهر لمدة هذا العدد من الأيام بعد إضافة الحساب */
-const NEW_DAYS = 7;
-/* الحسابات تأتي من الملف accounts.js الذي تحدّثه لوحة الأدمن */
-let ACCOUNTS = [];
+/* ================== اللغات ================== */
+/* الترتيب في كل مصفوفة: العربية، الإنجليزية، الهندية، الفرنسية، البرتغالية، الألمانية، الروسية */
+const LANGS = [
+  {code:"ar", name:"العربية",   dir:"rtl", loc:"en-US"},
+  {code:"en", name:"English",   dir:"ltr", loc:"en-US"},
+  {code:"hi", name:"हिन्दी",      dir:"ltr", loc:"en-US"},
+  {code:"fr", name:"Français",  dir:"ltr", loc:"fr-FR"},
+  {code:"pt", name:"Português", dir:"ltr", loc:"pt-BR"},
+  {code:"de", name:"Deutsch",   dir:"ltr", loc:"de-DE"},
+  {code:"ru", name:"Русский",   dir:"ltr", loc:"ru-RU"}
+];
+const T = {
+  telegram:  ["تيليجرام","Telegram","Telegram","Telegram","Telegram","Telegram","Telegram"],
+  langLabel: ["اللغة","Language","भाषा","Langue","Idioma","Sprache","Язык"],
+  options:   ["خيارات البحث","Search options","खोज विकल्प","Options de recherche","Opções de busca","Suchoptionen","Параметры поиска"],
+  sortLabel: ["الترتيب","Sort","क्रमबद्ध करें","Trier","Ordenar","Sortieren","Сортировка"],
+  sortAsc:   ["الأرخص أولاً","Cheapest first","सबसे सस्ता पहले","Moins cher d'abord","Mais barato primeiro","Günstigste zuerst","Сначала дешёвые"],
+  sortDesc:  ["الأغلى أولاً","Most expensive first","सबसे महंगा पहले","Plus cher d'abord","Mais caro primeiro","Teuerste zuerst","Сначала дорогие"],
+  sortLevel: ["الأعلى لفل","Highest level","सबसे ऊँचा लेवल","Niveau le plus élevé","Maior nível","Höchstes Level","Высокий уровень"],
+  sortLikes: ["الأكثر لايكات","Most likes","सबसे ज़्यादा लाइक","Plus de likes","Mais curtidas","Meiste Likes","Больше лайков"],
+  tip:       ["لبحث أفضل اختر عنصراً واحداً فقط من هذه الخيارات ثم ابحث.",
+              "For a better search, choose only one option from these, then search.",
+              "बेहतर खोज के लिए इनमें से केवल एक विकल्प चुनें, फिर खोजें।",
+              "Pour une meilleure recherche, choisissez une seule option ci-dessous, puis lancez la recherche.",
+              "Para uma busca melhor, escolha apenas uma opção abaixo e depois pesquise.",
+              "Für eine bessere Suche wählen Sie nur eine dieser Optionen aus und suchen Sie dann.",
+              "Для лучшего поиска выберите только один из этих вариантов, затем начните поиск."],
+  clear:     ["مسح الاختيار","Clear selection","चयन हटाएँ","Effacer la sélection","Limpar seleção","Auswahl löschen","Сбросить выбор"],
+  show:      ["عرض النتائج","Show results","नतीजे दिखाएँ","Voir les résultats","Ver resultados","Ergebnisse anzeigen","Показать результаты"],
+  gLevel:    ["البحث حسب اللفل","Search by level","लेवल के अनुसार खोजें","Rechercher par niveau","Buscar por nível","Nach Level suchen","Поиск по уровню"],
+  gLikes:    ["البحث حسب عدد اللايكات","Search by number of likes","लाइक की संख्या के अनुसार खोजें","Rechercher par nombre de likes","Buscar por número de curtidas","Nach Anzahl der Likes suchen","Поиск по количеству лайков"],
+  gPrice:    ["البحث حسب الثمن","Search by price","कीमत के अनुसार खोजें","Rechercher par prix","Buscar por preço","Nach Preis suchen","Поиск по цене"],
+  sLevel:    ["اللفل","Level","लेवल","Niveau","Nível","Level","Уровень"],
+  sLikes:    ["اللايكات","Likes","लाइक","Likes","Curtidas","Likes","Лайки"],
+  sPrice:    ["الثمن","Price","कीमत","Prix","Preço","Preis","Цена"],
+  levelRange:["من لفل {a} إلى {b}","Level {a} to {b}","लेवल {a} से {b}","Niveau {a} à {b}","Nível {a} a {b}","Level {a} bis {b}","Уровень от {a} до {b}"],
+  levelMore: ["أكثر من لفل {a}","Above level {a}","लेवल {a} से ऊपर","Au-dessus du niveau {a}","Acima do nível {a}","Über Level {a}","Выше уровня {a}"],
+  likesLess: ["أقل من {a} لايك","Under {a} likes","{a} से कम लाइक","Moins de {a} likes","Menos de {a} curtidas","Unter {a} Likes","Менее {a} лайков"],
+  range:     ["بين {a} و {b}","{a} to {b}","{a} से {b} के बीच","Entre {a} et {b}","Entre {a} e {b}","Zwischen {a} und {b}","От {a} до {b}"],
+  more:      ["أكثر من {a}","Over {a}","{a} से ज़्यादा","Plus de {a}","Mais de {a}","Über {a}","Более {a}"],
+  priceCheap:["رخيص","Cheap","सस्ता","Pas cher","Barato","Günstig","Дёшево"],
+  priceMid:  ["متوسط","Medium","मध्यम","Moyen","Médio","Mittel","Средне"],
+  priceUp:   ["أغلى بقليل","A bit pricier","थोड़ा महंगा","Un peu plus cher","Um pouco mais caro","Etwas teurer","Чуть дороже"],
+  priceHigh: ["غالي كثير","Very expensive","बहुत महंगा","Très cher","Muito caro","Sehr teuer","Очень дорого"],
+  subLess:   ["أقل من {a}","Under {a}","{a} से कम","Moins de {a}","Menos de {a}","Unter {a}","Менее {a}"],
+  avail:     ["{n} حساب متوفر","{n} available","{n} उपलब्ध","{n} disponible(s)","{n} disponível(is)","{n} verfügbar","Доступно: {n}"],
+  soldN:     ["{n} مباع","{n} sold","{n} बिक चुके","{n} vendu(s)","{n} vendido(s)","{n} verkauft","продано: {n}"],
+  loading:   ["جارٍ تحميل الحسابات...","Loading accounts...","खाते लोड हो रहे हैं...","Chargement des comptes...","Carregando contas...","Konten werden geladen...","Загрузка аккаунтов..."],
+  loadErr:   ["تعذّر تحميل الحسابات. أعد المحاولة بعد قليل.","Could not load accounts. Please try again shortly.","खाते लोड नहीं हो सके। कृपया थोड़ी देर बाद फिर कोशिश करें।","Impossible de charger les comptes. Réessayez dans un instant.","Não foi possível carregar as contas. Tente novamente em instantes.","Konten konnten nicht geladen werden. Bitte später erneut versuchen.","Не удалось загрузить аккаунты. Повторите попытку позже."],
+  emptyFT:   ["لا توجد حسابات بهذا الخيار","No accounts match this option","इस विकल्प में कोई खाता नहीं मिला","Aucun compte pour cette option","Nenhuma conta para esta opção","Keine Konten für diese Option","Нет аккаунтов по этому варианту"],
+  emptyFP:   ["جرّب خياراً آخر أو تواصل معنا وسنبحث لك عن حساب.","Try another option or message us and we will look for an account for you.","कोई दूसरा विकल्प आज़माएँ या हमें संदेश भेजें, हम आपके लिए खाता ढूँढ देंगे।","Essayez une autre option ou écrivez-nous, nous chercherons un compte pour vous.","Tente outra opção ou fale conosco e procuraremos uma conta para você.","Probieren Sie eine andere Option oder schreiben Sie uns, wir suchen ein Konto für Sie.","Попробуйте другой вариант или напишите нам, мы подберём аккаунт."],
+  showAll:   ["عرض كل الحسابات","Show all accounts","सभी खाते दिखाएँ","Voir tous les comptes","Ver todas as contas","Alle Konten anzeigen","Показать все аккаунты"],
+  noneT:     ["لا توجد حسابات حالياً","No accounts right now","अभी कोई खाता उपलब्ध नहीं है","Aucun compte pour le moment","Nenhuma conta no momento","Derzeit keine Konten","Сейчас нет аккаунтов"],
+  noneP:     ["ستُضاف حسابات جديدة قريباً.","New accounts will be added soon.","जल्द ही नए खाते जोड़े जाएँगे।","De nouveaux comptes seront ajoutés bientôt.","Novas contas serão adicionadas em breve.","Neue Konten folgen bald.","Новые аккаунты скоро появятся."],
+  acct:      ["حساب","Account","खाता","Compte","Conta","Konto","Аккаунт"],
+  likes:     ["لايكات","Likes","लाइक","Likes","Curtidas","Likes","Лайки"],
+  houses:    ["المنازل","Houses","घर","Maisons","Casas","Häuser","Дома"],
+  clothes:   ["الملابس","Clothes","कपड़े","Vêtements","Roupas","Kleidung","Одежда"],
+  pets:      ["الحيوانات","Pets","पालतू जानवर","Animaux","Animais","Haustiere","Питомцы"],
+  years:     ["السنوات","Years","साल","Années","Anos","Jahre","Годы"],
+  accountId: ["رقم الحساب","Account ID","खाता नंबर","N° du compte","ID da conta","Konto-ID","ID аккаунта"],
+  adult:     ["تأكيد العمر +18","Age 18+ confirmed","उम्र 18+ की पुष्टि","Âge 18+ confirmé","Idade 18+ confirmada","Alter 18+ bestätigt","Возраст 18+ подтверждён"],
+  yes:       ["نعم ✓","Yes ✓","हाँ ✓","Oui ✓","Sim ✓","Ja ✓","Да ✓"],
+  no:        ["لا","No","नहीं","Non","Não","Nein","Нет"],
+  stamp:     ["تم البيع","SOLD","बिक गया","VENDU","VENDIDO","VERKAUFT","ПРОДАНО"],
+  soldBtn:   ["تم البيع","Sold","बिक गया","Vendu","Vendido","Verkauft","Продано"],
+  buy:       ["اشترِ عبر تيليجرام","Buy on Telegram","टेलीग्राम पर खरीदें","Acheter sur Telegram","Comprar no Telegram","Auf Telegram kaufen","Купить в Telegram"],
+  buyMsg:    ["مرحباً، أريد شراء الحساب {id} ({name}) بسعر {price}","Hello, I want to buy account {id} ({name}) for {price}","नमस्ते, मैं खाता {id} ({name}) {price} में खरीदना चाहता हूँ","Bonjour, je souhaite acheter le compte {id} ({name}) à {price}","Olá, quero comprar a conta {id} ({name}) por {price}","Hallo, ich möchte das Konto {id} ({name}) für {price} kaufen","Здравствуйте, хочу купить аккаунт {id} ({name}) за {price}"],
+  note:      ["تُفتح محادثة تيليجرام مع البائع. اذكر رقم الحساب في رسالتك. الدفع والتسليم داخل المحادثة.",
+              "A Telegram chat with the seller will open. Mention the account ID in your message. Payment and delivery are handled in the chat.",
+              "विक्रेता के साथ टेलीग्राम चैट खुलेगी। अपने संदेश में खाता नंबर लिखें। भुगतान और डिलीवरी चैट में होगी।",
+              "Une conversation Telegram avec le vendeur s'ouvrira. Indiquez le n° du compte dans votre message. Paiement et livraison se font dans la conversation.",
+              "Uma conversa no Telegram com o vendedor será aberta. Informe o ID da conta na mensagem. Pagamento e entrega são feitos na conversa.",
+              "Es öffnet sich ein Telegram-Chat mit dem Verkäufer. Nennen Sie die Konto-ID in Ihrer Nachricht. Zahlung und Übergabe erfolgen im Chat.",
+              "Откроется чат с продавцом в Telegram. Укажите ID аккаунта в сообщении. Оплата и передача проходят в чате."],
+  close:     ["إغلاق","Close","बंद करें","Fermer","Fechar","Schließen","Закрыть"]
+};
+function yearsText(n){
+  switch(LANGS[LI].code){
+    case "ar": return n === 1 ? "سنة واحدة" : n === 2 ? "سنتان" : n <= 10 ? n + " سنوات" : n + " سنة";
+    case "en": return n + (n === 1 ? " year" : " years");
+    case "hi": return n + " साल";
+    case "fr": return n + (n > 1 ? " ans" : " an");
+    case "pt": return n + (n === 1 ? " ano" : " anos");
+    case "de": return n + (n === 1 ? " Jahr" : " Jahre");
+    case "ru": return n + (n % 10 === 1 && n % 100 !== 11 ? " год" : ([2,3,4].includes(n % 10) && ![12,13,14].includes(n % 100)) ? " года" : " лет");
+  }
+  return String(n);
+}
+let LI = 1;
+function detectLang(){
+  try{ const s = localStorage.getItem("avk_lang"); const i = LANGS.findIndex(l => l.code === s); if(i >= 0) return i; }catch(e){}
+  for(const c of (navigator.languages || [navigator.language || "en"])){
+    const i = LANGS.findIndex(l => String(c).toLowerCase().startsWith(l.code)); if(i >= 0) return i;
+  }
+  return 1;
+}
+function t(key, vars){
+  let s = (T[key] || [])[LI] || (T[key] || [])[1] || key;
+  if(vars) for(const k in vars) s = s.split("{" + k + "}").join(vars[k]);
+  return s;
+}
+const fmtFull = n => new Intl.NumberFormat(LANGS[LI].loc).format(n);
+const fmt = n => n >= 1000 ? (n/1000).toString().replace(/\.0$/,"") + "k" : String(n);
+const accName = a => /^حساب\s+AV-\d+$/.test(a.name || "") ? t("acct") + " " + a.id : a.name;
 
 /* ===== خيارات البحث: min شامل، max غير شامل. null = بلا حد ===== */
-const cur = SETTINGS.currency;
 const GROUPS = [
-  {key:"level", short:"اللفل", title:"البحث حسب اللفل", field:"level", options:[
-    {label:"من لفل 10 إلى 30", min:10, max:30},
-    {label:"من لفل 30 إلى 50", min:30, max:50},
-    {label:"من لفل 50 إلى 70", min:50, max:70},
-    {label:"أكثر من لفل 70",   min:70, max:null}
-  ]},
-  {key:"likes", short:"اللايكات", title:"البحث حسب عدد اللايكات", field:"likes", options:[
-    {label:"أقل من 200 لايك",  min:null, max:200},
-    {label:"بين 200 و 800",    min:200,  max:800},
-    {label:"بين 800 و 1500",   min:800,  max:1500},
-    {label:"بين 1500 و 3000",  min:1500, max:3000},
-    {label:"أكثر من 3000",     min:3000, max:null}
-  ]},
-  {key:"price", short:"الثمن", title:"البحث حسب الثمن", field:"price", options:[
-    {label:"رخيص",        sub:"أقل من 10"+cur,        min:null, max:10},
-    {label:"متوسط",       sub:"10"+cur+" – 30"+cur,   min:10,   max:30},
-    {label:"أغلى بقليل",  sub:"30"+cur+" – 60"+cur,   min:30,   max:60},
-    {label:"غالي كثير",   sub:"أكثر من 60"+cur,       min:60,   max:null}
-  ]}
+  {field:"level", title:"gLevel", short:"sLevel", opts:[
+    {k:"levelRange", min:10, max:30}, {k:"levelRange", min:30, max:50}, {k:"levelRange", min:50, max:70}, {k:"levelMore", min:70, max:null}]},
+  {field:"likes", title:"gLikes", short:"sLikes", opts:[
+    {k:"likesLess", min:null, max:200}, {k:"range", min:200, max:800}, {k:"range", min:800, max:1500}, {k:"range", min:1500, max:3000}, {k:"more", min:3000, max:null}]},
+  {field:"price", title:"gPrice", short:"sPrice", opts:[
+    {k:"priceCheap", sub:"less",  min:null, max:10},
+    {k:"priceMid",   sub:"range", min:10,   max:30},
+    {k:"priceUp",    sub:"range", min:30,   max:60},
+    {k:"priceHigh",  sub:"more",  min:60,   max:null}]}
 ];
+function optLabel(o){ return t(o.k, {a: o.min ?? o.max, b: o.max}); }
+function optSub(o){
+  if(o.sub === "less")  return t("subLess", {a: o.max + cur});
+  if(o.sub === "range") return o.min + cur + " – " + o.max + cur;
+  if(o.sub === "more")  return t("more", {a: o.min + cur});
+  return "";
+}
 
-const $ = id => document.getElementById(id);
-const fmt = n => n >= 1000 ? (n/1000).toString().replace(/\.0$/,"") + "k" : String(n);
-const fmtFull = n => new Intl.NumberFormat("en-US").format(n);
 const tg = m => `https://t.me/${String(SETTINGS.telegram).replace(/^@/, "")}` + (m ? "?text=" + encodeURIComponent(m) : "");
 $("topTg").href = tg();
 
 /* إذا وضعت a.img (مسار صورة) تظهر صورة الحساب، وإلا يظهر رسم مؤقت */
 function art(a, uid){
-  if(a.img) return `<img src="${imgUrl(a.img)}" alt="${a.name}" loading="lazy">`;
+  if(a.img) return `<img src="${imgUrl(a.img)}" alt="${accName(a)}" loading="lazy">`;
   const h = a.hue, h2 = (h+60)%360;
   return `<svg viewBox="0 0 440 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <defs>
@@ -234,20 +335,23 @@ const isNew = a => a.added && !a.sold && (Date.now() - Date.parse(a.added)) / 86
 function overlays(a){
   const b = (isNew(a) ? '<span class="badge new">New</span>' : '') + (a.vip ? '<span class="badge vip">VIP</span>' : '');
   return `<span class="lv">LV ${a.level}</span>${b ? `<div class="badges">${b}</div>` : ''}` +
-         (a.sold ? '<div class="sold-ov"><span>تم البيع</span></div>' : '');
+         (a.sold ? `<div class="sold-ov"><span>${t("stamp")}</span></div>` : '');
 }
 
 /* خيار واحد فقط في كل البحث */
 const state = {sel:null, sort:"asc"};   // sel = {g, o}
+let appState = "loading";                 // loading | error | ok
 
 function buildPanel(){
-  $("groups").innerHTML = GROUPS.map((g, gi) => `
-    <details class="grp">
-      <summary>${g.title}</summary>
-      <div class="opts">${g.options.map((o, oi) =>
-        `<button class="opt" type="button" data-g="${gi}" data-o="${oi}" aria-pressed="false">${o.label}${o.sub?`<small>${o.sub}</small>`:""}</button>`
+  $("groups").innerHTML = GROUPS.map((g, gi) => {
+    const open = document.querySelector(`details.grp[data-g="${gi}"]`)?.open ? " open" : "";
+    return `<details class="grp" data-g="${gi}"${open}>
+      <summary>${t(g.title)}</summary>
+      <div class="opts">${g.opts.map((o, oi) =>
+        `<button class="opt" type="button" data-g="${gi}" data-o="${oi}" aria-pressed="false">${optLabel(o)}${o.sub ? `<small>${optSub(o)}</small>` : ""}</button>`
       ).join("")}</div>
-    </details>`).join("");
+    </details>`;
+  }).join("");
 }
 
 function syncUI(){
@@ -256,16 +360,18 @@ function syncUI(){
     b.setAttribute("aria-pressed", String(!!on));
   });
   if(state.sel){
-    const g = GROUPS[state.sel.g], o = g.options[state.sel.o];
-    $("activeChip").textContent = `${g.short}: ${o.label}  ✕`;
+    const g = GROUPS[state.sel.g], o = g.opts[state.sel.o];
+    $("activeChip").textContent = `${t(g.short)}: ${optLabel(o)}  ✕`;
     $("active").hidden = false;
   } else { $("active").hidden = true; }
 }
 
 function render(){
+  if(appState === "loading"){ $("count").textContent = t("loading"); $("grid").innerHTML = ""; $("empty").hidden = true; syncUI(); return; }
+  if(appState === "error"){ $("count").textContent = t("loadErr"); $("grid").innerHTML = ""; $("empty").hidden = true; syncUI(); return; }
   let list = ACCOUNTS.slice();
   if(state.sel){
-    const g = GROUPS[state.sel.g], o = g.options[state.sel.o];
+    const g = GROUPS[state.sel.g], o = g.opts[state.sel.o];
     list = list.filter(a => (o.min === null || a[g.field] >= o.min) && (o.max === null || a[g.field] < o.max));
   }
   if(state.sort==="asc") list.sort((a,b)=>a.price-b.price);
@@ -274,48 +380,74 @@ function render(){
   if(state.sort==="likes") list.sort((a,b)=>b.likes-a.likes);
   list = [...list.filter(a => !a.sold), ...list.filter(a => a.sold)];
   const avail = list.filter(a => !a.sold).length, soldN = list.length - avail;
-  $("count").innerHTML = `<span><b>${avail}</b> حساب متوفر${soldN ? ` · ${soldN} مباع` : ""}</span>`;
+  $("count").innerHTML = ACCOUNTS.length
+    ? `<span>${t("avail", {n:"<b>" + avail + "</b>"})}${soldN ? " · " + t("soldN", {n:soldN}) : ""}</span>`
+    : "";
+  const none = !ACCOUNTS.length;
+  $("emptyT").textContent = t(none ? "noneT" : "emptyFT");
+  $("emptyP").textContent = t(none ? "noneP" : "emptyFP");
+  $("emptyReset").hidden = none;
   $("empty").hidden = list.length !== 0;
   $("grid").innerHTML = list.map(a => `
-    <button class="card${a.sold ? " sold" : ""}" type="button" data-id="${a.id}" aria-label="${a.name}، ${a.sold ? "تم البيع" : a.price + cur}">
+    <button class="card${a.sold ? " sold" : ""}" type="button" data-id="${a.id}" aria-label="${accName(a)}, ${a.sold ? t("soldBtn") : a.price + cur}">
       <div class="pic">${art(a, a.id)}${overlays(a)}</div>
       <div class="info">
-        <div class="row1"><h3>${a.name}</h3><span class="price">${a.price}${cur}</span></div>
-        <div class="mini"><span>لايكات <b>${fmtFull(a.likes)}</b></span><span>منازل <b>${a.houses}</b></span><span>ملابس <b>${fmtFull(a.clothes)}</b></span><span>حيوانات <b>${a.pets ?? 0}</b></span></div>
+        <div class="row1"><h3>${accName(a)}</h3><span class="price">${a.price}${cur}</span></div>
+        <div class="mini"><span>${t("likes")} <b>${fmtFull(a.likes)}</b></span><span>${t("houses")} <b>${a.houses}</b></span><span>${t("clothes")} <b>${fmtFull(a.clothes)}</b></span><span>${t("pets")} <b>${a.pets ?? 0}</b></span></div>
       </div>
     </button>`).join("");
   syncUI();
 }
 
+let openId = null;
 function openDetails(id){
-  const a = ACCOUNTS.find(x => x.id === id);
+  const a = ACCOUNTS.find(x => x.id === id); if(!a) return;
+  openId = id;
   $("dImg").innerHTML = art(a, "m"+a.id) + overlays(a);
-  $("dTitle").textContent = a.name;
+  $("dTitle").textContent = accName(a);
   $("dPrice").textContent = a.price + cur;
   const row = (k, v) => `<div><dt>${k}</dt><dd>${v}</dd></div>`;
   $("dFacts").innerHTML =
-    row("رقم الحساب", a.id) +
-    row("اللفل", a.level) +
-    row("اللايكات", fmtFull(a.likes)) +
-    row("المنازل", a.houses) +
-    row("الملابس", fmtFull(a.clothes)) +
-    row("الحيوانات", a.pets ?? 0) +
-    row("السنوات", a.years + " سنوات") +
-    row("تأكيد العمر +18", a.adult ? '<span class="yes">نعم ✓</span>' : '<span class="no">لا</span>');
+    row(t("accountId"), a.id) +
+    row(t("sLevel"), a.level) +
+    row(t("likes"), fmtFull(a.likes)) +
+    row(t("houses"), a.houses) +
+    row(t("clothes"), fmtFull(a.clothes)) +
+    row(t("pets"), a.pets ?? 0) +
+    row(t("years"), yearsText(a.years)) +
+    row(t("adult"), a.adult ? `<span class="yes">${t("yes")}</span>` : `<span class="no">${t("no")}</span>`);
   const buy = $("dBuy");
   buy.classList.toggle("off", !!a.sold);
-  buy.textContent = a.sold ? "تم البيع" : "اشترِ عبر تيليجرام";
-  buy.href = tg(`مرحباً، أريد شراء الحساب ${a.id} (${a.name}) بسعر ${a.price}${cur}`);
+  buy.textContent = a.sold ? t("soldBtn") : t("buy");
+  buy.href = tg(t("buyMsg", {id:a.id, name:accName(a), price:a.price + cur}));
   $("dlg").showModal();
 }
 
+/* ===== تطبيق اللغة ===== */
+function applyLang(){
+  const L = LANGS[LI];
+  document.documentElement.lang = L.code;
+  document.documentElement.dir = L.dir;
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => { el.setAttribute("aria-label", t(el.dataset.i18nAria)); });
+  buildPanel();
+  render();
+  if($("dlg").open && openId) openDetails(openId);
+}
 function setPanel(open){
   $("panel").hidden = !open;
   $("optBtn").setAttribute("aria-expanded", String(open));
 }
 function clearSel(){ state.sel = null; render(); }
 
-buildPanel();
+$("lang").innerHTML = LANGS.map((l, i) => `<option value="${i}">${l.name}</option>`).join("");
+LI = detectLang();
+$("lang").value = String(LI);
+$("lang").addEventListener("change", () => {
+  LI = +$("lang").value;
+  try{ localStorage.setItem("avk_lang", LANGS[LI].code); }catch(e){}
+  applyLang();
+});
 $("optBtn").addEventListener("click", () => setPanel($("panel").hidden));
 $("groups").addEventListener("click", e => {
   const b = e.target.closest(".opt"); if(!b) return;
@@ -334,6 +466,7 @@ $("sort").addEventListener("change", () => { state.sort = $("sort").value; rende
 $("grid").addEventListener("click", e => { const b = e.target.closest("[data-id]"); if(b) openDetails(b.dataset.id); });
 $("dClose").addEventListener("click", () => $("dlg").close());
 $("dlg").addEventListener("click", e => { if(e.target === $("dlg")) $("dlg").close(); });
+
 function loadScript(src){
   return new Promise(res => {
     const el = document.createElement("script");
@@ -342,18 +475,14 @@ function loadScript(src){
   });
 }
 async function load(){
-  $("count").textContent = "جارٍ تحميل الحسابات...";
+  appState = "loading"; render();
   window.ACCOUNTS = undefined;
   const ok = await loadScript(BASE + "accounts.js?t=" + Date.now());   /* t= يمنع عرض نسخة قديمة */
-  if(!ok || !Array.isArray(window.ACCOUNTS)){ $("count").textContent = "تعذّر تحميل الحسابات. أعد المحاولة بعد قليل."; return; }
+  if(!ok || !Array.isArray(window.ACCOUNTS)){ appState = "error"; render(); return; }
   ACCOUNTS = window.ACCOUNTS;
-  if(!ACCOUNTS.length){
-    $("count").textContent = "";
-    $("empty").innerHTML = "<h3>لا توجد حسابات حالياً</h3><p>ستُضاف حسابات جديدة قريباً.</p>";
-    $("empty").hidden = false; return;
-  }
-  render();
+  appState = "ok"; render();
 }
+applyLang();
 load();
 </script>
 </body>
