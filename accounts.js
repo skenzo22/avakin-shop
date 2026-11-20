@@ -16,22 +16,5 @@ window.ACCOUNTS = [
   "img": "",
   "hue": 200,
   "added": "2026-01-01T00:00:00.000Z"
- },
- {
-  "id": "AV-102",
-  "name": "مثال: حساب مباع",
-  "price": 55,
-  "level": 50,
-  "likes": 3611,
-  "houses": 7,
-  "clothes": 855,
-  "pets": 9,
-  "years": 5,
-  "adult": true,
-  "vip": true,
-  "sold": false,
-  "img": "",
-  "hue": 300,
-  "added": "2026-01-01T00:00:00.000Z"
  }
 ];
