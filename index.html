@@ -166,10 +166,17 @@ dialog::backdrop{background:rgba(5,3,9,.7)}
   </div>
 </dialog>
 
-<script src="config.js"></script>
+<script>
+/* مصدر البيانات: المتجر يقرأ الحسابات والصور والإعدادات من GitHub Pages، مهما كانت استضافة هذه الصفحة.
+   غيّر هذا الرابط فقط إذا غيّرت اسم المستودع أو حسابك. */
+window.DATA_BASE = "https://skenzo22.github.io/avakin-shop/";
+document.write('<script src="' + window.DATA_BASE + 'config.js"><\/script>');
+</script>
 <script>
 /* الإعدادات (الرقم والعملة) في ملف config.js */
 const CFG = window.APP_CONFIG || {};
+const BASE = window.DATA_BASE || "";
+const imgUrl = p => /^(https?:|data:)/.test(p) ? p : BASE + p;
 const SETTINGS = Object.assign({ currency:"$", whatsapp:"21600000000", telegram:"your_username" }, CFG.settings || {});
 
 /* وسم New يظهر لمدة هذا العدد من الأيام بعد إضافة الحساب */
@@ -209,7 +216,7 @@ $("topWa").href = wa();
 
 /* إذا وضعت a.img (مسار صورة) تظهر صورة الحساب، وإلا يظهر رسم مؤقت */
 function art(a, uid){
-  if(a.img) return `<img src="${a.img}" alt="${a.name}" loading="lazy">`;
+  if(a.img) return `<img src="${imgUrl(a.img)}" alt="${a.name}" loading="lazy">`;
   const h = a.hue, h2 = (h+60)%360;
   return `<svg viewBox="0 0 440 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <defs>
@@ -339,7 +346,7 @@ function loadScript(src){
 async function load(){
   $("count").textContent = "جارٍ تحميل الحسابات...";
   window.ACCOUNTS = undefined;
-  const ok = await loadScript("accounts.js?t=" + Date.now());   /* t= يمنع عرض نسخة قديمة */
+  const ok = await loadScript(BASE + "accounts.js?t=" + Date.now());   /* t= يمنع عرض نسخة قديمة */
   if(!ok || !Array.isArray(window.ACCOUNTS)){ $("count").textContent = "تعذّر تحميل الحسابات. أعد المحاولة بعد قليل."; return; }
   ACCOUNTS = window.ACCOUNTS;
   if(!ACCOUNTS.length){
