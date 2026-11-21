@@ -67,5 +67,22 @@ window.ACCOUNTS = [
   "img": "img/AV-104-1795242442470.jpg",
   "hue": 282,
   "added": "2026-11-21T06:27:24.292Z"
+ },
+ {
+  "id": "AV-105",
+  "name": "Boy",
+  "price": 0.99,
+  "level": 37,
+  "likes": 143,
+  "houses": 4,
+  "clothes": 450,
+  "pets": 9,
+  "years": 2,
+  "adult": false,
+  "vip": false,
+  "sold": false,
+  "img": "img/AV-105-1795243889677.jpg",
+  "hue": 266,
+  "added": "2026-11-21T06:51:31.726Z"
  }
 ];
