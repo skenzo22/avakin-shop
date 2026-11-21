@@ -95,7 +95,7 @@ window.ACCOUNTS = [
   "clothes": 1306,
   "pets": 29,
   "years": 6,
-  "adult": true,
+  "adult": false,
   "vip": true,
   "sold": false,
   "img": "img/AV-106-1795244351923.jpg",
